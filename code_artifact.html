@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة التمويل الشخصي والعقاري الاحترافية</title>
+    
+    <!-- خط تجوال وكايرو من Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- أيقونات Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- مكتبة Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- إعدادات Tailwind المخصصة -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Tajawal', 'Cairo', 'sans-serif'],
+                        cairo: ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            800: '#0c4a6e',
+                            900: '#082f49',
+                        },
+                        emerald: {
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        h1, h2, h3, .font-heading {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        /* تخصيص شريط التمرير (Range Slider) */
+        input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 999px;
+            background: #e2e8f0;
+            outline: none;
+            transition: background 0.2s;
+        }
+
+        .dark input[type=range] {
+            background: #334155;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #0284c7;
+            cursor: pointer;
+            border: 3px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.15s ease, background-color 0.15s ease;
+        }
+
+        .dark input[type=range]::-webkit-slider-thumb {
+            border-color: #1e293b;
+            background: #38bdf8;
+        }
+
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            background: #0369a1;
+        }
+
+        input[type=range]::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #0284c7;
+            cursor: pointer;
+            border: 3px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.15s ease;
+        }
+
+        /* إخفاء أسهم حقول الأرقام */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        /* تأثيرات زجاجية ناعمة */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+        }
+        .dark .glass-card {
+            background: rgba(30, 41, 59, 0.88);
+            backdrop-filter: blur(12px);
+        }
+
+        /* تنسيق الطباعة */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+    <!-- إشعار منبثق (Toast Notification) -->
+    <div id="toast" class="fixed bottom-5 left-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-slate-800 dark:bg-emerald-600 text-white px-5 py-3 rounded-xl shadow-xl flex items-center gap-3">
+        <i class="fa-solid fa-circle-check text-emerald-400 dark:text-white text-lg"></i>
+        <span id="toast-message" class="font-medium text-sm">تم نسخ ملخص التمويل بنجاح!</span>
+    </div>
+
+    <!-- الشريط العلوي (Header) -->
+    <header class="bg-gradient-to-l from-brand-900 via-brand-800 to-slate-900 text-white shadow-lg relative overflow-hidden">
+        <div class="absolute -top-24 -right-24 w-72 h-72 bg-brand-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 pointer-events-none"></div>
+        <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 relative z-10">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
+                        <i class="fa-solid fa-calculator text-2xl text-emerald-400"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">حاسبة التمويل الذكية</h1>
+                        <p class="text-brand-100 text-xs sm:text-sm mt-0.5">احسب أقساطك ونسبة الاستقطاع الشهري بدقة تامة</p>
+                    </div>
+                </div>
+
+                <!-- أزرار التحكم السريعة -->
+                <div class="flex items-center gap-3 no-print">
+                    <button id="theme-toggle" type="button" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 transition-all flex items-center gap-2 text-sm font-medium" aria-label="تبديل المظهر">
+                        <i id="theme-icon" class="fa-solid fa-moon text-amber-300 text-base"></i>
+                        <span id="theme-text" class="hidden sm:inline">الوضع الداكن</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+        
+        <!-- قسم التعليمات المبسط -->
+        <section class="mb-8 no-print" aria-label="خطوات الاستخدام">
+            <div class="bg-white dark:bg-slate-800/90 rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200/80 dark:border-slate-700/80">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 divide-y md:divide-y-0 md:divide-x md:divide-x-reverse divide-slate-100 dark:divide-slate-700">
+                    <div class="flex items-center gap-3.5 pt-2 md:pt-0 md:px-3 first:pt-0">
+                        <div class="w-10 h-10 rounded-xl bg-brand-50 dark:bg-brand-900/50 text-brand-600 dark:text-brand-400 flex items-center justify-center font-bold text-lg shrink-0 border border-brand-100 dark:border-brand-800">1</div>
+                        <div>
+                            <h2 class="font-bold text-sm text-slate-800 dark:text-slate-100">حدد نوع التمويل</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">اختر تمويلاً شخصياً أو عقارياً لضبط الحدود تلقائياً.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3.5 pt-3 md:pt-0 md:px-4">
+                        <div class="w-10 h-10 rounded-xl bg-brand-50 dark:bg-brand-900/50 text-brand-600 dark:text-brand-400 flex items-center justify-center font-bold text-lg shrink-0 border border-brand-100 dark:border-brand-800">2</div>
+                        <div>
+                            <h2 class="font-bold text-sm text-slate-800 dark:text-slate-100">أدخل الراتب والالتزامات</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">سجل دخلك الشهري والتزاماتك الحالية لفحص نسبة الاستقطاع.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3.5 pt-3 md:pt-0 md:px-4">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-lg shrink-0 border border-emerald-100 dark:border-emerald-800/60">3</div>
+                        <div>
+                            <h2 class="font-bold text-sm text-slate-800 dark:text-slate-100">استعرض القسط والجدول</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">احصل على القسط الشهري وصافي الراتب المتبقي وجدول السداد.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- الشبكة الرئيسية -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- العمود الأيمن: نموذج الإدخال (7 أعمدة) -->
+            <div class="lg:col-span-7 glass-card rounded-3xl shadow-md border border-slate-200/80 dark:border-slate-700/80 p-6 sm:p-8">
+                
+                <!-- نوع التمويل -->
+                <div class="mb-6">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400 mb-3">نوع البرنامج التمويلي</label>
+                    <div class="grid grid-cols-2 gap-3 p-1.5 bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200/60 dark:border-slate-700">
+                        <button type="button" id="tab-personal" onclick="switchLoanType('personal')" class="loan-tab active-tab flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-200 bg-white dark:bg-brand-600 text-brand-700 dark:text-white shadow-sm">
+                            <i class="fa-solid fa-user-tie text-lg"></i>
+                            <span>تمويل شخصي</span>
+                        </button>
+                        <button type="button" id="tab-mortgage" onclick="switchLoanType('mortgage')" class="loan-tab flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-200 text-slate-600 dark:text-slate-300 hover:text-brand-600">
+                            <i class="fa-solid fa-house-chimney text-lg"></i>
+                            <span>تمويل عقاري</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- إدخالات الدخل والالتزامات -->
+                <div class="mb-6 p-5 rounded-2xl bg-brand-50/50 dark:bg-slate-800/50 border border-brand-100 dark:border-slate-700/80 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-brand-700 dark:text-brand-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-wallet"></i>
+                            بيانات الدخل والالتزامات (لحساب نسبة الاستقطاع DBR)
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- الراتب الشهري -->
+                        <div>
+                            <label for="salary-input" class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">الراتب الشهري الإجمالي</label>
+                            <div class="relative">
+                                <input type="text" id="salary-input" value="15,000" inputmode="numeric" class="w-full pl-12 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl font-bold text-slate-800 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none transition">
+                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">ر.س</span>
+                            </div>
+                        </div>
+                        <!-- الالتزامات الشهرية الحالية -->
+                        <div>
+                            <label for="commitments-input" class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">الالتزامات الشهرية الحالية</label>
+                            <div class="relative">
+                                <input type="text" id="commitments-input" value="0" inputmode="numeric" class="w-full pl-12 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl font-bold text-slate-800 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none transition">
+                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">ر.س</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- النموذج الأساسي -->
+                <form id="calculator-form" onsubmit="event.preventDefault(); calculateLoan(true);" class="space-y-6">
+                    
+                    <!-- تفاصيل العقار (تظهر في العقاري فقط) -->
+                    <div id="mortgage-extra-fields" class="hidden space-y-4 p-5 rounded-2xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 transition-all">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">تفاصيل العقار والدفعة المقدمة</span>
+                            <span id="ltv-badge" class="text-xs bg-brand-100 dark:bg-brand-900 text-brand-800 dark:text-brand-200 px-2.5 py-0.5 rounded-full font-semibold">الدفعة الأولى: 10%</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="property-value-input" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">قيمة العقار الإجمالية</label>
+                                <div class="relative">
+                                    <input type="text" id="property-value-input" value="1,000,000" inputmode="numeric" class="w-full pl-12 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl font-bold text-slate-800 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none text-sm">
+                                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">ر.س</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="down-payment-input" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">الدفعة الأولى</label>
+                                <div class="relative">
+                                    <input type="text" id="down-payment-input" value="100,000" inputmode="numeric" class="w-full pl-12 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl font-bold text-slate-800 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none text-sm">
+                                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">ر.س</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <input type="range" id="down-payment-slider" min="0" max="50" step="1" value="10" aria-label="نسبة الدفعة الأولى">
+                        </div>
+                    </div>
+
+                    <!-- مبلغ التمويل -->
+                    <div>
+                        <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
+                            <label for="amount-input" class="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                                <i class="fa-solid fa-sack-dollar text-brand-600 dark:text-brand-400"></i>
+                                <span id="amount-label">مبلغ التمويل المطلوب</span>
+                            </label>
+                            <div class="relative w-44 sm:w-52">
+                                <input type="text" id="amount-input" value="100,000" inputmode="numeric" class="w-full pl-12 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl font-bold text-lg text-brand-700 dark:text-brand-300 focus:border-brand-500 outline-none text-left" dir="ltr">
+                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">ر.س</span>
+                            </div>
+                        </div>
+                        <input type="range" id="amount-slider" min="5000" max="1500000" step="5000" value="100000" class="mt-2" aria-label="شريط مبلغ التمويل">
+                        <div class="flex justify-between text-xs font-medium text-slate-400 mt-1">
+                            <span id="amount-min-label">5,000 ر.س</span>
+                            <span id="amount-max-label">1,500,000 ر.س</span>
+                        </div>
+                    </div>
+
+                    <!-- معدل النسبة السنوي -->
+                    <div class="pt-2 border-t border-slate-100 dark:border-slate-700/60">
+                        <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+                            <label for="rate-input" class="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                                <i class="fa-solid fa-percent text-brand-600 dark:text-brand-400"></i>
+                                <span>معدل النسبة السنوي (هامش الربح)</span>
+                            </label>
+                            <div class="relative w-32 sm:w-36">
+                                <input type="number" id="rate-input" value="3.85" min="0" max="30" step="0.05" class="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl font-bold text-lg text-brand-700 dark:text-brand-300 focus:border-brand-500 outline-none text-left" dir="ltr">
+                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">%</span>
+                            </div>
+                        </div>
+                        <input type="range" id="rate-slider" min="1" max="15" step="0.05" value="3.85" class="mt-1" aria-label="شريط نسبة الربح">
+                    </div>
+
+                    <!-- مدة التمويل بالسنوات دائماً -->
+                    <div class="pt-2 border-t border-slate-100 dark:border-slate-700/60">
+                        <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
+                            <label for="tenure-input" class="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                                <i class="fa-regular fa-calendar-check text-brand-600 dark:text-brand-400"></i>
+                                <span>مدة السداد (بالسنوات)</span>
+                            </label>
+                            <div class="relative w-32 sm:w-36">
+                                <input type="number" id="tenure-input" value="5" min="1" max="5" step="1" class="w-full pl-14 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl font-bold text-lg text-brand-700 dark:text-brand-300 focus:border-brand-500 outline-none text-left" dir="ltr">
+                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">سنوات</span>
+                            </div>
+                        </div>
+                        <input type="range" id="tenure-slider" min="1" max="5" step="1" value="5" class="mt-2" aria-label="شريط مدة التمويل">
+                        <div class="flex justify-between text-xs font-medium text-slate-400 mt-1">
+                            <span id="tenure-min-label">سنة واحدة</span>
+                            <span id="tenure-equivalent" class="text-brand-600 dark:text-brand-400 font-semibold">يعادل 60 قسطاً شهرياً</span>
+                            <span id="tenure-max-label">5 سنوات</span>
+                        </div>
+                    </div>
+
+                    <!-- أزرار الإجراءات -->
+                    <div class="pt-4 flex flex-col sm:flex-row gap-3 no-print">
+                        <button type="submit" class="flex-1 py-3.5 px-6 rounded-2xl bg-gradient-to-l from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white font-bold text-base shadow-lg shadow-brand-600/25 flex items-center justify-center gap-2.5 transition-all">
+                            <i class="fa-solid fa-bolt"></i>
+                            <span>حساب القسط الشهري والاستقطاع</span>
+                        </button>
+                        <button type="button" onclick="resetCalculator()" class="py-3.5 px-5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-sm flex items-center justify-center gap-2 transition-all">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            <span>إعادة ضبط</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- العمود الأيسر: بطاقة النتائج الملخصة ونسبة الاستقطاع (5 أعمدة) -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- بطاقة النتائج -->
+                <div id="result-card" class="rounded-3xl bg-gradient-to-br from-slate-900 via-brand-900 to-slate-900 text-white p-6 sm:p-8 shadow-xl relative overflow-hidden border border-white/10 transition-all duration-300">
+                    <div class="absolute -top-16 -left-16 w-48 h-48 bg-emerald-500/20 rounded-full blur-2xl pointer-events-none"></div>
+                    <div class="absolute bottom-0 right-0 w-40 h-40 bg-brand-500/20 rounded-full blur-2xl pointer-events-none"></div>
+
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-2">
+                            <span id="result-loan-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                                <i class="fa-solid fa-circle-check"></i>
+                                ملخص التمويل الشخصي
+                            </span>
+                            <span id="installments-count-badge" class="text-xs text-slate-300 font-medium">60 قسطاً</span>
+                        </div>
+
+                        <!-- القسط الشهري البارز -->
+                        <div class="my-5 text-center sm:text-right bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
+                            <p class="text-slate-300 text-sm font-medium mb-1">قسط التمويل الجديد</p>
+                            <div class="flex items-baseline justify-center sm:justify-start gap-2">
+                                <span id="monthly-payment" class="text-4xl sm:text-5xl font-extrabold text-emerald-400 tracking-tight font-cairo">1,834.91</span>
+                                <span class="text-base font-bold text-slate-300">ر.س / شهرياً</span>
+                            </div>
+                        </div>
+
+                        <!-- تفاصيل الاستقطاع المالي (مهم بناءً على طلبك الجديد) -->
+                        <div class="space-y-3 text-sm bg-black/20 p-4 rounded-2xl border border-white/10">
+                            <div class="flex justify-between items-center py-1">
+                                <span class="text-slate-300">الالتزامات الشهرية الحالية:</span>
+                                <span class="font-bold text-slate-200"><span id="summary-commitments">0.00</span> ر.س</span>
+                            </div>
+                            <div class="flex justify-between items-center py-1 border-t border-white/10">
+                                <span class="text-slate-300">إجمالي الالتزامات (مع القسط):</span>
+                                <span class="font-bold text-amber-300"><span id="summary-total-commitments">1,834.91</span> ر.س</span>
+                            </div>
+                            <div class="flex justify-between items-center py-1 border-t border-white/10">
+                                <span class="text-slate-300">صافي الراتب المتبقي بعد القسط:</span>
+                                <span class="font-bold text-emerald-300"><span id="summary-remaining-salary">13,165.09</span> ر.س</span>
+                            </div>
+                            <div class="flex justify-between items-center py-1.5 border-t border-white/10 font-bold">
+                                <span class="text-white">نسبة الاستقطاع الإجمالية (DBR):</span>
+                                <span id="dbr-badge" class="px-2.5 py-0.5 rounded-lg text-xs bg-emerald-500 text-white font-extrabold">12.2% (مقبولة)</span>
+                            </div>
+                        </div>
+
+                        <!-- تفاصيل المبالغ الكلية -->
+                        <div class="mt-4 space-y-2.5 text-xs text-slate-300 pt-3 border-t border-white/10">
+                            <div class="flex justify-between">
+                                <span>أصل التمويل: <strong id="summary-principal" class="text-white">100,000</strong> ر.س</span>
+                                <span>إجمالي الأرباح: <strong id="summary-interest" class="text-amber-300">10,094.60</strong> ر.س</span>
+                            </div>
+                        </div>
+
+                        <!-- أزرار المشاركة والجدول -->
+                        <div class="mt-6 grid grid-cols-2 gap-3 no-print">
+                            <button type="button" onclick="copySummary()" class="py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold flex items-center justify-center gap-2 border border-white/15 transition">
+                                <i class="fa-regular fa-copy"></i>
+                                <span>نسخ الملخص</span>
+                            </button>
+                            <button type="button" onclick="toggleAmortization(true)" class="py-2.5 px-4 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs font-bold flex items-center justify-center gap-2 border border-emerald-400/30 transition">
+                                <i class="fa-solid fa-table-list"></i>
+                                <span>جدول السداد</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- إرشاد التحذير المالي -->
+                <div id="financial-alert-box" class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700 shadow-sm flex items-start gap-3.5">
+                    <div id="alert-icon-wrap" class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                        <i id="alert-icon" class="fa-solid fa-circle-check text-lg"></i>
+                    </div>
+                    <div class="text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                        <h3 id="alert-title" class="font-bold text-slate-800 dark:text-white text-sm mb-1">الوضع المالي ممتاز</h3>
+                        <p id="financial-tip-text">نسبة الاستقطاع الإجمالية ضمن الحدود المقبولة نظامياً (أقل من النسبة القصوى المعتمدة للتمويل).</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- قسم جدول السداد التفصيلي -->
+        <section id="amortization-section" class="mt-8">
+            <div class="glass-card rounded-3xl shadow-sm border border-slate-200/80 dark:border-slate-700 overflow-hidden">
+                <button type="button" onclick="toggleAmortization()" class="w-full p-5 sm:p-6 flex items-center justify-between text-right hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-2xl bg-brand-50 dark:bg-brand-900/50 text-brand-600 dark:text-brand-400 flex items-center justify-center">
+                            <i class="fa-solid fa-calendar-days text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-800 dark:text-white">جدول السداد التفصيلي (Amortization Schedule)</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">توزيع الأقساط بين أصل المبلغ والأرباح والرصيد المتبقي لكل فترة</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span id="schedule-toggle-text" class="text-xs font-bold text-brand-600 dark:text-brand-400 hidden sm:inline">عرض الجدول</span>
+                        <div id="schedule-chevron" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 transition-transform duration-300">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+                </button>
+
+                <div id="amortization-content" class="hidden border-t border-slate-200 dark:border-slate-700">
+                    <div class="p-4 sm:px-6 bg-slate-50/70 dark:bg-slate-800/60 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/70 dark:border-slate-700 no-print">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-slate-600 dark:text-slate-300">طريقة العرض:</span>
+                            <div class="inline-flex rounded-xl p-1 bg-slate-200/80 dark:bg-slate-900">
+                                <button type="button" id="view-yearly" onclick="setScheduleView('yearly')" class="px-3 py-1 rounded-lg text-xs font-bold bg-white dark:bg-brand-600 text-brand-700 dark:text-white shadow-sm transition">ملخص سنوي</button>
+                                <button type="button" id="view-monthly" onclick="setScheduleView('monthly')" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 transition">تفصيل شهري</button>
+                            </div>
+                        </div>
+
+                        <button type="button" onclick="exportCSV()" class="py-2 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-sm transition">
+                            <i class="fa-solid fa-file-csv"></i>
+                            <span>تصدير الجدول (CSV)</span>
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto max-h-[460px] overflow-y-auto">
+                        <table class="w-full text-right text-sm border-collapse">
+                            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 sticky top-0 z-10 shadow-sm">
+                                <tr>
+                                    <th id="schedule-col-period" class="py-3.5 px-4 font-bold border-b dark:border-slate-700">السنة</th>
+                                    <th class="py-3.5 px-4 font-bold border-b dark:border-slate-700">إجمالي الأقساط المدفوعة</th>
+                                    <th class="py-3.5 px-4 font-bold border-b dark:border-slate-700 text-sky-700 dark:text-sky-400">المسدد من الأصل</th>
+                                    <th class="py-3.5 px-4 font-bold border-b dark:border-slate-700 text-amber-700 dark:text-amber-400">الأرباح المدفوعة</th>
+                                    <th class="py-3.5 px-4 font-bold border-b dark:border-slate-700">الرصيد المتبقي</th>
+                                </tr>
+                            </thead>
+                            <tbody id="amortization-tbody" class="divide-y divide-slate-200/70 dark:divide-slate-700 text-slate-700 dark:text-slate-300">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- تذييل الصفحة -->
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6 mt-12 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved text-brand-600 dark:text-brand-400"></i>
+                <span>جميع الحسابات تفصيلية تقديرية لأغراض التخطيط المالي وتعتمد معيار النسبة المتناقصة القياسية.</span>
+            </div>
+            <div>
+                <span>صُممت بأحدث معايير تجربة المستخدم &copy; 2026</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- الأكواد البرمجية -->
+    <script>
+        const state = {
+            loanType: 'personal',        // 'personal' | 'mortgage'
+            scheduleView: 'yearly',      // 'yearly' | 'monthly'
+            salary: 15000,
+            commitments: 0,
+            propertyValue: 1000000,
+            downPayment: 100000,
+            amount: 100000,
+            rate: 3.85,
+            tenureYears: 5,              // بالسنوات دائماً
+            monthlySchedule: []
+        };
+
+        const loanConfigs = {
+            personal: {
+                defaultAmount: 100000,
+                minAmount: 5000,
+                maxAmount: 1500000,
+                stepAmount: 5000,
+                defaultRate: 3.85,
+                defaultTenureYears: 5,
+                maxTenureYears: 5,
+                badgeText: 'ملخص التمويل الشخصي',
+                amountLabel: 'مبلغ التمويل المطلوب',
+                maxDbr: 0.3333 // 33.33% للتمويل الشخصي
+            },
+            mortgage: {
+                defaultProperty: 1000000,
+                defaultDownPayment: 100000,
+                defaultAmount: 900000,
+                minAmount: 100000,
+                maxAmount: 5000000,
+                stepAmount: 10000,
+                defaultRate: 4.25,
+                defaultTenureYears: 20,
+                maxTenureYears: 30,
+                badgeText: 'ملخص التمويل العقاري',
+                amountLabel: 'صافي مبلغ التمويل العقاري',
+                maxDbr: 0.65 // 65% للتمويل العقاري
+            }
+        };
+
+        // عناصر DOM
+        const amountInput = document.getElementById('amount-input');
+        const amountSlider = document.getElementById('amount-slider');
+        const rateInput = document.getElementById('rate-input');
+        const rateSlider = document.getElementById('rate-slider');
+        const tenureInput = document.getElementById('tenure-input');
+        const tenureSlider = document.getElementById('tenure-slider');
+        const salaryInput = document.getElementById('salary-input');
+        const commitmentsInput = document.getElementById('commitments-input');
+        const propertyValueInput = document.getElementById('property-value-input');
+        const downPaymentInput = document.getElementById('down-payment-input');
+        const downPaymentSlider = document.getElementById('down-payment-slider');
+
+        function formatNumber(num, decimals = 0) {
+            if (isNaN(num)) return '0';
+            return Number(num).toLocaleString('en-US', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            });
+        }
+
+        function parseFormattedNumber(str) {
+            if (typeof str !== 'string') return Number(str) || 0;
+            const cleaned = str.replace(/,/g, '').replace(/[^\d.]/g, '');
+            return parseFloat(cleaned) || 0;
+        }
+
+        function switchLoanType(type) {
+            state.loanType = type;
+            const config = loanConfigs[type];
+
+            const tabPersonal = document.getElementById('tab-personal');
+            const tabMortgage = document.getElementById('tab-mortgage');
+            const mortgageFields = document.getElementById('mortgage-extra-fields');
+
+            if (type === 'personal') {
+                tabPersonal.className = "loan-tab flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-200 bg-white dark:bg-brand-600 text-brand-700 dark:text-white shadow-sm";
+                tabMortgage.className = "loan-tab flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-200 text-slate-600 dark:text-slate-300 hover:text-brand-600";
+                mortgageFields.classList.add('hidden');
+            } else {
+                tabMortgage.className = "loan-tab flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-200 bg-white dark:bg-brand-600 text-brand-700 dark:text-white shadow-sm";
+                tabPersonal.className = "loan-tab flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-200 text-slate-600 dark:text-slate-300 hover:text-brand-600";
+                mortgageFields.classList.remove('hidden');
+
+                state.propertyValue = config.defaultProperty;
+                state.downPayment = config.defaultDownPayment;
+                propertyValueInput.value = formatNumber(state.propertyValue);
+                downPaymentInput.value = formatNumber(state.downPayment);
+                downPaymentSlider.value = 10;
+                document.getElementById('ltv-badge').textContent = `الدفعة الأولى: 10%`;
+            }
+
+            amountSlider.min = config.minAmount;
+            amountSlider.max = config.maxAmount;
+            amountSlider.step = config.stepAmount;
+            state.amount = config.defaultAmount;
+            amountSlider.value = state.amount;
+            amountInput.value = formatNumber(state.amount);
+
+            document.getElementById('amount-label').textContent = config.amountLabel;
+            document.getElementById('amount-min-label').textContent = `${formatNumber(config.minAmount)} ر.س`;
+            document.getElementById('amount-max-label').textContent = `${formatNumber(config.maxAmount)} ر.س`;
+
+            state.rate = config.defaultRate;
+            rateInput.value = state.rate;
+            rateSlider.value = state.rate;
+
+            // تحديد المدة بالسنوات دائماً
+            tenureSlider.min = 1;
+            tenureSlider.max = config.maxTenureYears;
+            tenureInput.min = 1;
+            tenureInput.max = config.maxTenureYears;
+            state.tenureYears = config.defaultTenureYears;
+            tenureSlider.value = state.tenureYears;
+            tenureInput.value = state.tenureYears;
+            document.getElementById('tenure-min-label').textContent = 'سنة واحدة';
+            document.getElementById('tenure-max-label').textContent = `${config.maxTenureYears} سنوات`;
+
+            document.getElementById('result-loan-badge').innerHTML = `<i class="fa-solid fa-circle-check"></i> ${config.badgeText}`;
+
+            calculateLoan();
+        }
+
+        function calculateLoan(animateCard = false) {
+            const principal = Math.max(0, state.amount);
+            const annualRate = Math.max(0, state.rate);
+            const totalYears = Math.max(1, state.tenureYears);
+            const totalMonths = totalYears * 12;
+
+            document.getElementById('tenure-equivalent').textContent = `يعادل ${totalMonths} قسطاً شهرياً`;
+            document.getElementById('installments-count-badge').textContent = `${totalMonths} قسطاً`;
+
+            let monthlyPayment = 0;
+            let totalPayment = 0;
+            let totalInterest = 0;
+            state.monthlySchedule = [];
+
+            if (principal === 0 || totalMonths === 0) {
+                updateResultsUI(0, 0, 0, 0);
+                renderAmortizationTable();
+                return;
+            }
+
+            if (annualRate === 0) {
+                monthlyPayment = principal / totalMonths;
+                totalPayment = principal;
+                totalInterest = 0;
+
+                let balance = principal;
+                for (let m = 1; m <= totalMonths; m++) {
+                    balance = Math.max(0, balance - monthlyPayment);
+                    state.monthlySchedule.push({
+                        month: m,
+                        payment: monthlyPayment,
+                        principalPaid: monthlyPayment,
+                        interestPaid: 0,
+                        balance: balance
+                    });
+                }
+            } else {
+                // حساب الفائدة المتناقصة القياسية (EMI) المعتمدة
+                const monthlyRate = (annualRate / 100) / 12;
+                const factor = Math.pow(1 + monthlyRate, totalMonths);
+                monthlyPayment = principal * (monthlyRate * factor) / (factor - 1);
+                totalPayment = monthlyPayment * totalMonths;
+                totalInterest = totalPayment - principal;
+
+                let balance = principal;
+                for (let m = 1; m <= totalMonths; m++) {
+                    const interestPart = balance * monthlyRate;
+                    let principalPart = monthlyPayment - interestPart;
+                    if (m === totalMonths) {
+                        principalPart = balance;
+                        balance = 0;
+                    } else {
+                        balance = Math.max(0, balance - principalPart);
+                    }
+                    state.monthlySchedule.push({
+                        month: m,
+                        payment: principalPart + interestPart,
+                        principalPaid: principalPart,
+                        interestPaid: interestPart,
+                        balance: balance
+                    });
+                }
+            }
+
+            updateResultsUI(monthlyPayment, principal, totalInterest, totalPayment, animateCard);
+            renderAmortizationTable();
+        }
+
+        function updateResultsUI(monthlyPayment, principal, totalInterest, totalPayment, animateCard) {
+            document.getElementById('monthly-payment').textContent = formatNumber(monthlyPayment, 2);
+            document.getElementById('summary-principal').textContent = formatNumber(principal, 0);
+            document.getElementById('summary-interest').textContent = formatNumber(totalInterest, 2);
+            document.getElementById('summary-commitments').textContent = formatNumber(state.commitments, 2);
+
+            const totalCommitments = state.commitments + monthlyPayment;
+            document.getElementById('summary-total-commitments').textContent = formatNumber(totalCommitments, 2);
+
+            const remainingSalary = Math.max(0, state.salary - totalCommitments);
+            document.getElementById('summary-remaining-salary').textContent = formatNumber(remainingSalary, 2);
+
+            // نسبة الاستقطاع الإجمالية DBR
+            const dbr = state.salary > 0 ? (totalCommitments / state.salary) * 100 : 0;
+            const maxDbrLimit = loanConfigs[state.loanType].maxDbr * 100;
+
+            const dbrBadge = document.getElementById('dbr-badge');
+            const alertBox = document.getElementById('financial-alert-box');
+            const alertIconWrap = document.getElementById('alert-icon-wrap');
+            const alertIcon = document.getElementById('alert-icon');
+            const alertTitle = document.getElementById('alert-title');
+            const financialTipText = document.getElementById('financial-tip-text');
+
+            dbrBadge.textContent = `${dbr.toFixed(1)}%`;
+
+            if (dbr <= maxDbrLimit) {
+                dbrBadge.className = "px-2.5 py-0.5 rounded-lg text-xs bg-emerald-500 text-white font-extrabold";
+                alertBox.className = "bg-white dark:bg-slate-800 rounded-2xl p-5 border border-emerald-200 dark:border-emerald-900/50 shadow-sm flex items-start gap-3.5";
+                alertIconWrap.className = "w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5";
+                alertIcon.className = "fa-solid fa-circle-check text-lg";
+                alertTitle.textContent = "الوضع المالي ممتاز ومقبول";
+                financialTipText.textContent = `نسبة الاستقطاع الإجمالية (${dbr.toFixed(1)}%) ضمن الحد المسموح به (${maxDbrLimit}%). صافي راتبك المتبقي كافٍ وآمن.`;
+            } else {
+                dbrBadge.className = "px-2.5 py-0.5 rounded-lg text-xs bg-amber-500 text-white font-extrabold";
+                alertBox.className = "bg-white dark:bg-slate-800 rounded-2xl p-5 border border-amber-200 dark:border-amber-900/50 shadow-sm flex items-start gap-3.5";
+                alertIconWrap.className = "w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 mt-0.5";
+                alertIcon.className = "fa-solid fa-triangle-exclamation text-lg";
+                alertTitle.textContent = "تنبيه: تجاوز نسبة الاستقطاع القصوى";
+                financialTipText.textContent = `نسبة الاستقطاع الحالية (${dbr.toFixed(1)}%) تتجاوز الحد النظامي الموصى به (${maxDbrLimit}%). يُنصح بزيادة مدة السداد أو تقليل مبلغ التمويل.`;
+            }
+
+            if (animateCard) {
+                const card = document.getElementById('result-card');
+                card.classList.add('ring-4', 'ring-emerald-400/50', 'scale-[1.01]');
+                setTimeout(() => {
+                    card.classList.remove('ring-4', 'ring-emerald-400/50', 'scale-[1.01]');
+                }, 300);
+            }
+        }
+
+        function renderAmortizationTable() {
+            const tbody = document.getElementById('amortization-tbody');
+            const colHeader = document.getElementById('schedule-col-period');
+            tbody.innerHTML = '';
+
+            if (!state.monthlySchedule.length) return;
+
+            if (state.scheduleView === 'yearly') {
+                colHeader.textContent = 'السنة';
+                let year = 1;
+                let yearPayment = 0;
+                let yearPrincipal = 0;
+                let yearInterest = 0;
+
+                state.monthlySchedule.forEach((row, index) => {
+                    yearPayment += row.payment;
+                    yearPrincipal += row.principalPaid;
+                    yearInterest += row.interestPaid;
+
+                    const isYearEnd = (index + 1) % 12 === 0 || index === state.monthlySchedule.length - 1;
+                    if (isYearEnd) {
+                        const tr = document.createElement('tr');
+                        tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition";
+                        tr.innerHTML = `
+                            <td class="py-3 px-4 font-bold text-slate-800 dark:text-white">السنة ${year}</td>
+                            <td class="py-3 px-4 font-medium">${formatNumber(yearPayment, 2)} ر.س</td>
+                            <td class="py-3 px-4 text-sky-700 dark:text-sky-400 font-semibold">${formatNumber(yearPrincipal, 2)} ر.س</td>
+                            <td class="py-3 px-4 text-amber-700 dark:text-amber-400 font-semibold">${formatNumber(yearInterest, 2)} ر.س</td>
+                            <td class="py-3 px-4 font-bold">${formatNumber(row.balance, 2)} ر.س</td>
+                        `;
+                        tbody.appendChild(tr);
+                        year++;
+                        yearPayment = 0;
+                        yearPrincipal = 0;
+                        yearInterest = 0;
+                    }
+                });
+            } else {
+                colHeader.textContent = 'الشهر';
+                state.monthlySchedule.forEach((row) => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition";
+                    tr.innerHTML = `
+                        <td class="py-2.5 px-4 font-bold text-slate-800 dark:text-white">قسط #${row.month}</td>
+                        <td class="py-2.5 px-4 font-medium">${formatNumber(row.payment, 2)} ر.س</td>
+                        <td class="py-2.5 px-4 text-sky-700 dark:text-sky-400 font-semibold">${formatNumber(row.principalPaid, 2)} ر.س</td>
+                        <td class="py-2.5 px-4 text-amber-700 dark:text-amber-400 font-semibold">${formatNumber(row.interestPaid, 2)} ر.س</td>
+                        <td class="py-2.5 px-4 font-bold">${formatNumber(row.balance, 2)} ر.س</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        function setScheduleView(view) {
+            state.scheduleView = view;
+            const btnYearly = document.getElementById('view-yearly');
+            const btnMonthly = document.getElementById('view-monthly');
+
+            if (view === 'yearly') {
+                btnYearly.className = "px-3 py-1 rounded-lg text-xs font-bold bg-white dark:bg-brand-600 text-brand-700 dark:text-white shadow-sm transition";
+                btnMonthly.className = "px-3 py-1 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 transition";
+            } else {
+                btnMonthly.className = "px-3 py-1 rounded-lg text-xs font-bold bg-white dark:bg-brand-600 text-brand-700 dark:text-white shadow-sm transition";
+                btnYearly.className = "px-3 py-1 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 transition";
+            }
+            renderAmortizationTable();
+        }
+
+        function toggleAmortization(forceOpen = false) {
+            const content = document.getElementById('amortization-content');
+            const chevron = document.getElementById('schedule-chevron');
+            const toggleText = document.getElementById('schedule-toggle-text');
+
+            const isHidden = content.classList.contains('hidden');
+            if (isHidden || forceOpen) {
+                content.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+                toggleText.textContent = 'إخفاء الجدول';
+                if (forceOpen) {
+                    document.getElementById('amortization-section').scrollIntoView({ behavior: 'smooth' });
+                }
+            } else {
+                content.classList.add('hidden');
+                chevron.classList.remove('rotate-180');
+                toggleText.textContent = 'عرض الجدول';
+            }
+        }
+
+        function exportCSV() {
+            if (!state.monthlySchedule.length) return;
+            let csvContent = "\uFEFF";
+            csvContent += "رقم القسط,القسط الشهري (ر.س),المسدد من الأصل (ر.س),الأرباح (ر.س),الرصيد المتبقي (ر.س)\n";
+
+            state.monthlySchedule.forEach(r => {
+                csvContent += `${r.month},${r.payment.toFixed(2)},${r.principalPaid.toFixed(2)},${r.interestPaid.toFixed(2)},${r.balance.toFixed(2)}\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `جدول_سداد_التمويل_${state.loanType}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('تم تحميل جدول السداد بصيغة CSV بنجاح');
+        }
+
+        function copySummary() {
+            const loanTitle = state.loanType === 'personal' ? 'تمويل شخصي' : 'تمويل عقاري';
+            const monthly = document.getElementById('monthly-payment').textContent;
+            const principal = document.getElementById('summary-principal').textContent;
+            const interest = document.getElementById('summary-interest').textContent;
+            const dbr = document.getElementById('dbr-badge').textContent;
+            const remaining = document.getElementById('summary-remaining-salary').textContent;
+
+            const text = `ملخص حساب (${loanTitle}):\n` +
+                         `• مبلغ التمويل: ${principal} ر.س\n` +
+                         `• القسط الشهري الجديد: ${monthly} ر.س\n` +
+                         `• إجمالي الأرباح: ${interest} ر.س\n` +
+                         `• نسبة الاستقطاع الإجمالية (DBR): ${dbr}\n` +
+                         `• صافي الراتب المتبقي: ${remaining} ر.س`;
+
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('تم نسخ ملخص التمويل إلى الحافظة!');
+            } catch (err) {
+                showToast('تعذر النسخ التلقائي');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function resetCalculator() {
+            switchLoanType(state.loanType);
+            salaryInput.value = '15,000';
+            commitmentsInput.value = '0';
+            state.salary = 15000;
+            state.commitments = 0;
+            calculateLoan();
+            showToast('تمت إعادة ضبط القيم الافتراضية');
+        }
+
+        function setupEventListeners() {
+            // الراتب الشهري
+            salaryInput.addEventListener('input', (e) => {
+                state.salary = parseFormattedNumber(e.target.value);
+                calculateLoan();
+            });
+            salaryInput.addEventListener('blur', () => {
+                salaryInput.value = formatNumber(state.salary);
+            });
+
+            // الالتزامات الحالية
+            commitmentsInput.addEventListener('input', (e) => {
+                state.commitments = parseFormattedNumber(e.target.value);
+                calculateLoan();
+            });
+            commitmentsInput.addEventListener('blur', () => {
+                commitmentsInput.value = formatNumber(state.commitments);
+            });
+
+            // مبلغ التمويل
+            amountSlider.addEventListener('input', (e) => {
+                state.amount = parseFloat(e.target.value);
+                amountInput.value = formatNumber(state.amount);
+                if (state.loanType === 'mortgage') {
+                    state.propertyValue = state.amount + state.downPayment;
+                    propertyValueInput.value = formatNumber(state.propertyValue);
+                }
+                calculateLoan();
+            });
+
+            amountInput.addEventListener('input', (e) => {
+                const rawVal = parseFormattedNumber(e.target.value);
+                state.amount = rawVal;
+                amountSlider.value = Math.min(Math.max(rawVal, amountSlider.min), amountSlider.max);
+                calculateLoan();
+            });
+            amountInput.addEventListener('blur', () => {
+                amountInput.value = formatNumber(state.amount);
+            });
+
+            // العقار والدفعة المقدمة
+            propertyValueInput.addEventListener('input', (e) => {
+                state.propertyValue = parseFormattedNumber(e.target.value);
+                const pct = parseFloat(downPaymentSlider.value) || 10;
+                state.downPayment = Math.round(state.propertyValue * (pct / 100));
+                state.amount = Math.max(0, state.propertyValue - state.downPayment);
+
+                downPaymentInput.value = formatNumber(state.downPayment);
+                amountInput.value = formatNumber(state.amount);
+                amountSlider.value = state.amount;
+                calculateLoan();
+            });
+            propertyValueInput.addEventListener('blur', () => {
+                propertyValueInput.value = formatNumber(state.propertyValue);
+            });
+
+            downPaymentInput.addEventListener('input', (e) => {
+                state.downPayment = Math.min(state.propertyValue, parseFormattedNumber(e.target.value));
+                state.amount = Math.max(0, state.propertyValue - state.downPayment);
+                const pct = state.propertyValue > 0 ? (state.downPayment / state.propertyValue) * 100 : 0;
+
+                downPaymentSlider.value = Math.min(50, pct);
+                document.getElementById('ltv-badge').textContent = `الدفعة الأولى: ${pct.toFixed(0)}%`;
+                amountInput.value = formatNumber(state.amount);
+                amountSlider.value = state.amount;
+                calculateLoan();
+            });
+            downPaymentInput.addEventListener('blur', () => {
+                downPaymentInput.value = formatNumber(state.downPayment);
+            });
+
+            downPaymentSlider.addEventListener('input', (e) => {
+                const pct = parseFloat(e.target.value);
+                state.downPayment = Math.round(state.propertyValue * (pct / 100));
+                state.amount = Math.max(0, state.propertyValue - state.downPayment);
+
+                document.getElementById('ltv-badge').textContent = `الدفعة الأولى: ${pct.toFixed(0)}%`;
+                downPaymentInput.value = formatNumber(state.downPayment);
+                amountInput.value = formatNumber(state.amount);
+                amountSlider.value = state.amount;
+                calculateLoan();
+            });
+
+            // نسبة الربح
+            rateSlider.addEventListener('input', (e) => {
+                state.rate = parseFloat(e.target.value);
+                rateInput.value = state.rate;
+                calculateLoan();
+            });
+            rateInput.addEventListener('input', (e) => {
+                let val = parseFloat(e.target.value);
+                if (isNaN(val) || val < 0) val = 0;
+                if (val > 40) val = 40;
+                state.rate = val;
+                rateSlider.value = Math.min(val, rateSlider.max);
+                calculateLoan();
+            });
+
+            // مدة التمويل بالسنوات دائماً
+            tenureSlider.addEventListener('input', (e) => {
+                state.tenureYears = parseInt(e.target.value, 10);
+                tenureInput.value = state.tenureYears;
+                calculateLoan();
+            });
+            tenureInput.addEventListener('input', (e) => {
+                let val = parseInt(e.target.value, 10);
+                if (isNaN(val) || val < 1) val = 1;
+                const maxAllowed = parseInt(tenureSlider.max, 10);
+                if (val > maxAllowed) val = maxAllowed;
+                state.tenureYears = val;
+                tenureSlider.value = val;
+                calculateLoan();
+            });
+
+            // تبديل الوضع الداكن
+            document.getElementById('theme-toggle').addEventListener('click', () => {
+                const html = document.documentElement;
+                const isDark = html.classList.toggle('dark');
+                const icon = document.getElementById('theme-icon');
+                const text = document.getElementById('theme-text');
+
+                if (isDark) {
+                    icon.className = 'fa-solid fa-sun text-amber-400 text-base';
+                    text.textContent = 'الوضع الفاتح';
+                } else {
+                    icon.className = 'fa-solid fa-moon text-amber-300 text-base';
+                    text.textContent = 'الوضع الداكن';
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+            calculateLoan();
+        });
+    </script>
+</body>
+</html>
